@@ -1,0 +1,55 @@
+{
+  "rate": {
+    "0": [
+      "OH NO. OH NO. **PLEASE GET OUT OF HERE**. Everything is made worse when you're around. I'm sorry {person}, but you get a {num}/10...",
+      "OH WOW YOU'RE ***BAD.*** Please give a hands up for {person}, they get a **{num}/10!**",
+      "Oh lol you're straight up just *baaaaadd*. ***LLLLL*** {person} gets a big fat {num}/10."
+    ],
+    "3": [
+      "*Slight cringe* I know you're trying your best, you just... don't make me super impressed. I'll give {person} a {num}/10.",
+      "*Looks up*, you know, could be worse. Here's your number, {person}. You get a mediocre {num}/10."
+    ],
+    "6": [
+      "Hey, that's pretty good. I think you're a pretty cool person {person}. {person1}/10.",
+      "Oh woah, not an awful person! Clngratulections {person}, {num}/10"
+    ],
+    "7": [
+      "Hey! You're awesome! gz on a {num}/10, {person}!",
+      ":D I really like you! {person} get's a {num}/10."
+    ],
+    "9": [
+      "You're so close to being certified awesome! I guess I'll give {person} certified cool! {num}/10 (⌐■_■)",
+      "Pretty epic. *Pretty epic*. Uh **pretty epic**. {num}/10 {person}."
+    ],
+    "10": [
+      "Wow. I can't believe it. YOU ARE CERTIFIED AWESOME!!!! ***{num}/10 {person}***",
+      "It's ***PARTY TIME***. We are living in front of one of the ***MOST AWESOME PEOPLE OF ALL TIME!!!*** {num}/10 person!"
+    ]
+  },
+  "compat": {
+    "0": [
+      "**OH NO. PLEASE NO** {person1} and {person2} have ***no*** compatibility. {level}/50 :("
+    ],
+    "10": [
+      "{person1} and {person2} are equivalent to a one night fling. They deeply regret all past relations. {level}/50."
+    ],
+    "20": [
+      "They see each other and grow hopeful of a friendship, but they still pass each other walking. Not looking great {person1} and {person2}. {level}/50. "
+    ],
+    "30": [
+      "The warm embrace of {person1} is something that {person2} looks forward to everyday. {level}/50."
+    ],
+    "38": [
+      "Everyday they see each other and smile at the thought of being together. {person1} and {person2} have a compatibility of {level}/50. "
+    ],
+    "45": [
+      "{person1} has finally transcended best friendship with {person2}. They have made it to longing for each other. {level}/50. "
+    ],
+    "49": [
+      "How they did it, I don't know. These two are extremely close and love spending time with each other. Good job {person1} and {person2}. *{level}/50*. "
+    ],
+    "50": [
+      "***CONGRATS*** {person1} and {person2} are *officially* soulmates! Party time baby!! {level}/50"
+    ]
+  }
+}
