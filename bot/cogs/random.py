@@ -70,7 +70,7 @@ class Random(commands.Cog):
 
     @commands.Cog.listener()
     async def on_typing(self, channel, user, when):
-        if (self.last_type is None or (when - self.last_type).total_seconds() > 120) and random.random() < 0.1:
+        if (self.last_type is None or (when - self.last_type).total_seconds() > 120) and random.random() < 0.001:
             self.last_type = when
             async with channel.typing():
                 await asyncio.sleep(3)
@@ -97,7 +97,7 @@ class Random(commands.Cog):
         if message.author.bot:
             return
         num = random.random()
-        if num < 0.05:
+        if num < 0.0005:
             await self.out_of_context(message)
 
     async def out_of_context(self, message):
