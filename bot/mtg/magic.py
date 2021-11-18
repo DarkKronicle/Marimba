@@ -71,6 +71,9 @@ class Magic(commands.Cog):
     async def on_message(self, message: discord.Message):
         if message.guild is None:
             return
+        if message.author.id == self.bot.user.id:
+            # No recursion
+            return
         settings = await guild_config.get_guild_settings(self.bot, message.guild)
         if settings.mtg_inline == '' or settings.mtg_inline is None:
             return

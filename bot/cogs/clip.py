@@ -130,24 +130,30 @@ class Clips(commands.Cog):
 
     @clip.command(name='list')
     async def people_list(self, ctx: Context, *, user: typing.Optional[discord.User] = None):
+        title = ''
         if user and user.id == ctx.author.id:
             if ctx.guild:
                 condition = 'owner_id = {0} AND location_id = {1}'.format(ctx.author.id, ctx.guild.id)
+                title = 'Clips from {1} created by {0}'.format(str(ctx.author), str(ctx.guild.name))
             else:
                 condition = 'owner_id = {0} AND location_id = {0}'.format(ctx.author.id)
+                title = 'Personal Clips'
         elif user:
             if not ctx.guild:
                 return await ctx.send(embed=ctx.create_embed('You have to be in a guild to select someone else!', error=True))
             condition = 'owner_id = {0} AND location_id = {1}'.format(user.id, ctx.guild.id)
+            title = 'Clips from {1} created by {0}'.format(str(ctx.author), str(ctx.guild.name))
         elif ctx.guild:
             condition = 'location_id = {0}'.format(ctx.guild.id)
+            title = 'Clips from {0}'.format(str(ctx.guild.name))
         else:
             condition = 'location_id = {0}'.format(ctx.author.id)
+            title = 'Personal Clips'
         command = 'SELECT id, name FROM clips WHERE {0};'.format(condition)
         entries = await ctx.db.fetch(command)
         if len(entries) == 0:
             return await ctx.send(embed=ctx.create_embed('No clips found!'))
-        embed = ctx.create_embed()
+        embed = ctx.create_embed(title=title)
         if ctx.guild:
             embed.set_footer(text='To view personal clips DM me this command!')
         page = ClipPages(entries, embed=embed)
@@ -339,6 +345,26 @@ class Clips(commands.Cog):
         await self.send_clip_content(ctx, clip)
         update = 'UPDATE clips SET uses = uses + 1 WHERE id = {0};'.format(clip['id'])
         await ctx.db.execute(update)
+
+    @clip_global.command(name='list')
+    async def global_list(self, ctx: Context, *, user: typing.Optional[discord.User] = None):
+        title = ''
+        if user:
+            condition = 'owner_id = {0} AND location_id IS NULL'.format(user.id)
+            title = 'Global Clips created by {0}'.format(str(user))
+        else:
+            condition = 'location_id IS NULL'.format(ctx.author.id)
+            title = 'Global Clips'
+        command = 'SELECT id, name FROM clips WHERE {0};'.format(condition)
+        entries = await ctx.db.fetch(command)
+        if len(entries) == 0:
+            return await ctx.send(embed=ctx.create_embed('No clips found!'))
+        embed = ctx.create_embed(title=title)
+        page = ClipPages(entries, embed=embed)
+        try:
+            await page.start(ctx)
+        except:
+            pass
 
     @clip_global.command(name='new')
     async def create_global(self, ctx: Context, name: ClipName, *, content):
