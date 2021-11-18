@@ -1,9 +1,11 @@
 import io
 
+import aiohttp
 import discord
 import typing
 from discord.ext import commands
 import emoji
+from discord.ext.commands import BucketType
 from glocklib import paginator
 from glocklib.context import Context
 
@@ -200,6 +202,24 @@ class Utility(commands.Cog):
             ['`{0}` {1}'.format(member.joined_at.strftime('%m/%d %H:%M'), member.mention) for member in members_sorted]
         )
         await ctx.send(embed=ctx.create_embed(description))
+
+    @commands.cooldown(1, 10, BucketType.user)
+    @commands.command(name='aaa')
+    async def aaa(self, ctx: Context, *, url: str):
+        """
+        Simplifies a URL
+        """
+        txt = None
+        if not url.startswith('https://'):
+            url = 'https://{0}'.format(url)
+        await ctx.trigger_typing()
+        async with aiohttp.ClientSession() as session:
+            async with session.get('https://api.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.com/a?url={0}'.format(url)) as r:
+                if r.status == 200:
+                    txt = await r.text()
+        if txt is None:
+            return await ctx.send(embed=ctx.create_embed('Something went wrong!', error=True), delete_after=5)
+        await ctx.send(embed=ctx.create_embed(txt))
 
 
 def setup(bot):
