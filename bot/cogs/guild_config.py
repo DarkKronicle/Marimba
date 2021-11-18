@@ -3,23 +3,34 @@ from glocklib import database as db
 from glocklib.context import Context
 from discord.ext import commands
 from glocklib import storage_cache as cache
+import re
+
+
+async def get_guild_settings(bot, guild):
+    """Get's basic guild settings information."""
+    cog = bot.get_cog('GuildConfig')
+    if cog is None:
+        return GuildSettings.get_default(guild)
+    return await cog.get_settings(guild.id)
 
 
 class GuildConfigTable(db.Table, table_name='guild_config'):
     guild_id = db.Column(db.Integer(big=True), unique=True, index=True)
     prefix = db.Column(db.String(length=12), default='x>')  # noqa: WPS432
+    mtg_inline = db.Column(db.String(), default='')
 
 
 class GuildSettings:
-    __slots__ = ('guild', 'prefix', 'message_cooldown')
+    __slots__ = ('guild', 'prefix', 'mtg_inline')
 
-    def __init__(self, guild, prefix):
+    def __init__(self, guild, prefix, mtg_inline):
         self.guild = guild
         self.prefix = prefix
+        self.mtg_inline = mtg_inline
 
     @classmethod
     def get_default(cls, guild):
-        return cls(guild, '>')
+        return cls(guild, '>', '')
 
 
 async def get_guild_settings(bot, guild):
@@ -41,13 +52,13 @@ class GuildConfig(commands.Cog):
         guild = self.bot.get_guild(guild_id)
         if guild is None:
             return None
-        command = 'SELECT prefix FROM guild_config WHERE guild_id = {0};'
+        command = 'SELECT prefix, mtg_inline FROM guild_config WHERE guild_id = {0};'
         command = command.format(guild_id)
         async with db.MaybeAcquire(pool=self.bot.pool) as con:
             entry = await con.fetchrow(command)
         if entry is None:
             return GuildSettings.get_default(guild)
-        return GuildSettings(guild, entry['prefix'])
+        return GuildSettings(guild, entry['prefix'], entry['mtg_inline'])
 
     @commands.command(name='!prefix')
     @checks.is_manager()
@@ -78,6 +89,22 @@ class GuildConfig(commands.Cog):
         else:
             prefix = data.prefix
         await ctx.send(embed=ctx.create_embed(description='Current prefix is: `{0}`'.format(prefix)))
+
+    @commands.command(name='!mtgregex')
+    @checks.is_manager()
+    async def mtg_regex(self, ctx: Context, *, regex: str = None):
+        if regex is None:
+            return await ctx.send(embed=ctx.create_embed('You have to provide regex! An example for would be `;(.*?);`. Make sure the first group captures card name!'))
+        try:
+            re.compile(regex)
+        except:
+            return await ctx.send(embed=ctx.create_embed('That regex is invalid!', error=True))
+        command = 'INSERT INTO guild_config(guild_id, mtg_inline) VALUES ({0}, $1) ON CONFLICT (guild_id) DO UPDATE SET mtg_inline = EXCLUDED.mtg_inline;'
+        command = command.format(str(ctx.guild.id))
+        async with db.MaybeAcquire(pool=self.bot.pool) as con:
+            await con.execute(command, regex)
+        self.get_settings.invalidate(self, ctx.guild.id)
+        await ctx.send(embed=ctx.create_embed('Updated mtg inline to `{0}`.'.format(regex)))
 
 
 def setup(bot):
