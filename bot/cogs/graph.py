@@ -18,15 +18,15 @@ class Graph(commands.Cog):
     @commands.group(name='graph', aliases=['g'], invoke_without_command=True)
     async def graph(self, ctx: Context, *, name: str):
         # https://mermaid-js.github.io/mermaid/#/Tutorials?id=python-integration-with-mermaid-js
-        await self.send_mermaid(ctx)
+        await self.send_mermaid(ctx, name)
 
-    async def send_mermaid(self, ctx: Context):
-        contents = re.findall(r'```.+```', ctx.message.content, re.DOTALL)
-        if len(contents) == 0:
-            return await ctx.send(
-                embed=ctx.create_embed(description=r"Please put your graph data surrounded by \`\`\`!", error=True))
+    async def send_mermaid(self, ctx: Context, name):
+        contents = re.findall(r'```.+```', name, re.DOTALL)
         await ctx.trigger_typing()
-        g = contents[0][3:-3]
+        if contents:
+            g = contents[0][3:-3]
+        else:
+            g = name
         g = g.lstrip('\n').lstrip(' ').rstrip('\n').rstrip(' ')
         base64_bytes = base64.b64encode(g.encode("ascii"))
         base64_string = base64_bytes.decode("ascii")
