@@ -5,6 +5,47 @@ from glocklib.paginator import Pages
 from bot.mtg.card_views import CardView
 
 
+class CardPrintsSource(menus.ListPageSource):
+
+    def __init__(self, entries, *, per_page=15, embed=None):
+        super().__init__(entries, per_page=per_page)
+        self.embed = embed
+
+    async def format_page(self, menu, entries):
+        if self.embed is not None:
+            embed = self.embed
+        else:
+            embed = discord.Embed(colour=discord.Colour.magenta())
+        pages = []
+        for index, entry in enumerate(entries, start=menu.current_page * self.per_page):
+            pages.append(f"**{index + 1}.** {entry.set_name()} ({entry.released_at()})")
+
+        maximum = self.get_max_pages()
+        if maximum > 1:
+            footer = f"Page {menu.current_page + 1}/{maximum} ({len(self.entries)} entries.)"
+            embed.set_footer(text=footer)
+
+        embed.description = '\n'.join(pages)
+        if len(menu.query) > 20:
+            q = menu.query[:20] + "..."
+        else:
+            q = menu.query
+        embed.set_author(name=f"Prints for: {q}")
+        menu.embed = embed
+        return menu.embed
+
+    async def format_card(self, menu, card):
+        view = menu.view_type
+        embed = view.value(card)
+        embed.set_footer(text=f"{embed.footer.text} - Showing card {menu.current_card + 1}/{len(self.entries)}")
+        menu.embed = embed
+        return menu.embed
+
+    def is_paginating(self):
+        # We always want buttons so that we can view card information.
+        return True
+
+
 class CardSearchSource(menus.ListPageSource):
 
     def __init__(self, entries, *, per_page=15, embed=None):
@@ -51,11 +92,13 @@ class CardSearch(Pages):
     A menu that consists of two parts, the list of all cards, then the in depth card view on each.
     """
 
-    def __init__(self, entries, query, *, per_page=15, embed=None):
+    def __init__(self, entries, query, *, per_page=15, embed=None, source=None):
         self.embed = embed
         if self.embed is None:
             self.embed = discord.Embed(colour=discord.Colour.magenta())
-        super().__init__(CardSearchSource(entries, per_page=per_page, embed=embed))
+        if source is None:
+            source = CardSearchSource
+        super().__init__(source(entries, per_page=per_page, embed=embed))
         self.entries = entries
         self.current_card = 0
         self.card_view = False

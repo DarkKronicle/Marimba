@@ -63,9 +63,17 @@ class Games(commands.Cog):
 
     @commands.group(name='rps')
     @commands.guild_only()
-    async def rps(self, ctx):
+    async def rps(self, ctx, *, other: discord.Member):
         if ctx.invoked_subcommand is None:
-            await ctx.send_help('rps')
+            result = await ctx.ask(
+                'Does {0} accept rock paper scissors from {1}? (Say `yes` or `no`)'.format(other.mention,
+                                                                                           ctx.author.mention),
+                author_id=other.id)
+            if not result or result.lower() != 'yes':
+                return await ctx.send(embed=ctx.create_embed('Cancelled!', error=True))
+            rps = RPSGame(ctx, ctx.author)
+            await rps.add_user(other)
+            await rps.start()
 
     @rps.command(name='start')
     async def rps_start(self, ctx: Context, *, other: discord.Member):

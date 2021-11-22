@@ -6,7 +6,7 @@ import scrython
 from scrython.cards.cards_object import CardsObject
 
 from bot.cogs import guild_config
-from bot.mtg.card_search import CardSearch
+from bot.mtg.card_search import CardSearch, CardPrintsSource
 from bot.mtg.magic_page import SingleCardMenu
 from bot.util import queue as async_queue, queue
 
@@ -157,6 +157,32 @@ class Magic(commands.Cog):
             description=message
         )
         await ctx.send(embed=embed)
+
+    @magic.command(name="prints", aliases=['print', 'p'])
+    async def prints(self, ctx: Context, *, card_name):
+        card = await MagicCard(self.queue).convert(ctx, card_name)
+        if card is None:
+            return await ctx.send(embed=ctx.create_embed('Invalid card!', error=True))
+        kwargs = {
+            'q': 'oracleid:{0}'.format(card.oracle_id()),
+            'order': 'released',
+            'unique': 'prints',
+        }
+        async with ctx.typing():
+            async with queue.QueueProcess(queue=self.queue):
+                try:
+                    cards = scrython.cards.Search(**kwargs)
+                    await cards.request_data()
+                except scrython.foundation.ScryfallError as e:
+                    print("rip!")
+                    return await ctx.send(e.error_details["details"])
+        if len(cards.data()) == 0:
+            return await ctx.send("No cards with that name found.")
+        try:
+            p = CardSearch([Searched(c) for c in cards.data()], card.name(), embed=ctx.create_embed(), source=CardPrintsSource)
+            await p.start(ctx)
+        except menus.MenuError as e:
+            await ctx.send(e)
 
 
 def setup(bot):

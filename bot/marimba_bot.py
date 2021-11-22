@@ -19,6 +19,7 @@ startup_extensions = (
     'bot.games.game',
     'bot.mtg.magic',
     'bot.cogs.clip',
+    'bot.cogs.graph',
 )
 description = 'Fun bot'
 
@@ -62,6 +63,7 @@ class MarimbaBot(bot.Bot):
             case_insensitive=True,
             owner_id=bot_global.config['owner_id'],
             allowed_mentions=allowed_mentions,
+            tags=False,
         )
         self.boot = datetime.now()
         for extension in startup_extensions:
@@ -99,5 +101,3 @@ class MarimbaBot(bot.Bot):
             if isinstance(new_exception, errors.MissingRequiredArgument):
                 return await ctx.send(embed=ctx.create_embed(description="Missing argument!", error=True), delete_after=5)
             raise new_exception
-
-
