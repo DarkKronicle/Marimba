@@ -12,6 +12,7 @@ from bot.util import queue as async_queue, queue
 
 from discord.ext import commands, menus
 from glocklib.context import Context
+import rules
 
 
 class Searched(CardsObject):
@@ -183,6 +184,40 @@ class Magic(commands.Cog):
             await p.start(ctx)
         except menus.MenuError as e:
             await ctx.send(e)
+
+    @magic.command(name="define")
+    async def define(self, ctx: Context, *, keyword=None):
+        """
+        Defines a keyword using MTG Rules
+        """
+        if keyword is None:
+            return await ctx.send('mtg define')
+        gloss = rules.lookup(keyword)
+        if gloss is None:
+            return await ctx.send("Nothing was found!")
+        embed = discord.Embed(
+            title=keyword,
+            description=gloss,
+            colour=discord.Colour.dark_grey()
+        )
+        await ctx.send(embed=embed)
+
+    @magic.command(name="notes")
+    async def notes(self, ctx: Context, *, card=None):
+        """
+        Gets a card based off of it's name.
+        """
+        # TODO make this a menu since there can be lots of info.
+        if card is None:
+            return await ctx.send_help('mtg notes')
+        async with ctx.typing():
+            card = await MagicCard(queue=self.queue, raise_again=False).convert(ctx, card)
+            if card is None:
+                return await ctx.send_help('mtg notes')
+            async with queue.QueueProcess(self.queue):
+                rulings = scrython.Id(id=card.id())
+                await rulings.request_data()
+            await ctx.send(embed=rulings_embed(card, rulings))
 
 
 def setup(bot):
