@@ -286,6 +286,20 @@ class Magic(commands.Cog):
         )
         await ctx.send(embed=embed)
 
+    def keys_to_human(self, keys):
+        key_length = len(keys)
+        if key_length == 1:
+            message = f"{keys[0]}"
+        elif key_length == 2:
+            message = f"{keys[1]}"
+        elif key_length == 3:
+            message = f"{keys[1]}.{keys[2]}"
+        elif key_length == 4:
+            message = f"{keys[1]}.{keys[2]}{keys[3]}"
+        else:
+            message = f"{keys[1]}.{keys[2]}{keys[3]}"
+        return message
+
 
 def setup(bot):
     bot.add_cog(Magic(bot))
