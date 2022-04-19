@@ -15,6 +15,25 @@ from discord.ext import commands, menus
 from glocklib.context import Context
 
 
+def rulings_embed(card: CardsObject, rulings: RulingsObject):
+    data = rulings.data()
+    embed = discord.Embed(
+        colour=discord.Colour.gold(),
+        description="Here's what I know about this card:"
+    )
+    embed.set_author(name=card.name() + " - Rulings", url=card.scryfall_uri())
+    i = 0
+    if len(data) == 0:
+        embed.description = "Nothing found."
+        return embed
+    for ruling in data:
+        i = i + 1
+        if i > 10:
+            break
+        embed.add_field(name=ruling['source'], value=ruling['comment'], inline=False)
+    return embed
+
+
 class Searched(CardsObject):
 
     def __init__(self, json, **kwargs):
@@ -218,6 +237,54 @@ class Magic(commands.Cog):
                 rulings = scrython.Id(id=card.id())
                 await rulings.request_data()
             await ctx.send(embed=rulings_embed(card, rulings))
+
+    @magic.command(name="rule")
+    async def rule(self, ctx: Context, *, rule=None):
+        """
+        Grabs a rule for MTG. ###.#A-Z
+        """
+        if rule is None:
+            return await ctx.send('mtg rule')
+        keys, definition = rules.get_section(rule)
+        if definition is None:
+            return await ctx.send("That rule doesn't exist!")
+        limit = 1800
+        message = ""
+        for key, val in definition.items():
+            if key == "name":
+                message = message + f"\n__{val}__"
+            elif isinstance(val, str):
+                message = message + f"\n{val}"
+            elif isinstance(val, dict):
+                message = message + f"\n"
+                message = message + f"__{self.keys_to_human(keys + [key])}__"
+                for key1, val1 in val.items():
+                    if key1 == "name":
+                        message = message + f"\n**{val1}**\n"
+                    elif isinstance(val1, str):
+                        message = message + f"\n{val1}"
+                    elif isinstance(val1, dict):
+                        message = message + f"\n\n"
+                        message = message + f"__{self.keys_to_human(keys + [key, key1])}__"
+                        for key2, val2 in val1.items():
+                            if key2 == "name":
+                                message = message + f"\n**{val2}**\n"
+                            elif isinstance(val2, str):
+                                message = message + f"\n{val2}"
+                    if len(message) > limit:
+                        break
+            if len(message) > limit:
+                break
+
+        if len(message) > limit:
+            message = message[:limit] + "..."
+
+        embed = discord.Embed(
+            title=self.keys_to_human(keys),
+            description=message,
+            colour=discord.Colour.dark_grey()
+        )
+        await ctx.send(embed=embed)
 
 
 def setup(bot):
