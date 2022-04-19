@@ -15,7 +15,7 @@ from discord.ext import commands, menus
 from glocklib.context import Context
 
 
-def rulings_embed(card: CardsObject, rulings: RulingsObject):
+def rulings_embed(card, rulings):
     data = rulings.data()
     embed = discord.Embed(
         colour=discord.Colour.gold(),
