@@ -1,4 +1,4 @@
-from util.json_reader import JSONReader
+from bot.util.json_reader import JSONReader
 import re
 
 RULES = JSONReader("./storage/rules_mtg.json")
