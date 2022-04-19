@@ -8,7 +8,7 @@ from scrython.cards.cards_object import CardsObject
 from bot.cogs import guild_config
 from bot.mtg.card_search import CardSearch, CardPrintsSource
 from bot.mtg.magic_page import SingleCardMenu
-import bot.mtg.rules
+import bot.mtg.rules as rules
 from bot.util import queue as async_queue, queue
 
 from discord.ext import commands, menus
