@@ -1,7 +1,8 @@
+from pathlib import Path
 from bot.util.json_reader import JsonReader
 import re
 
-RULES = JsonReader("./storage/rules_mtg.json")
+RULES = JsonReader(Path("./storage/rules_mtg.json"))
 
 
 def string_to_section(keyword):
