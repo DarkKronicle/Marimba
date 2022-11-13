@@ -41,7 +41,7 @@ def embed_from_answers(answers):
 
 
 def _field_exists(attribute):
-    return attribute != discord.Embed.Empty
+    return attribute != None
 
 
 # Custom deserialization and serialization so that we can restrict embeds
@@ -97,6 +97,6 @@ def serialize(embed: discord.Embed, **kwargs):
     )
     obj_dict = {}
     for key, value in obj_list:
-        if value != discord.Embed.Empty:
+        if value != None:
             obj_dict[key] = value
     return json.dumps(obj_dict, **kwargs)

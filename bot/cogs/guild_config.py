@@ -47,6 +47,7 @@ class GuildConfig(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @cache.cache()
     async def get_settings(self, guild_id):
         guild = self.bot.get_guild(guild_id)
         if guild is None:

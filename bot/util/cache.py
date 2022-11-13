@@ -130,4 +130,4 @@ def cache(maxsize=64, cache_object=None):  # noqa: C901,WPS212,WPS231
         wrapper.exists = _args_exist
         return wrapper
 
-    return
+    return decorator

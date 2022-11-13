@@ -21,7 +21,7 @@ class OnTheSpotUser(BaseGameUser):
         self.points = 0
         self.channel = channel
 
-    def create_embed(self, description=discord.Embed.Empty, *, colour=discord.Colour.purple()):
+    def create_embed(self, description=None, *, colour=discord.Colour.purple()):
         embed = discord.Embed(description=description, colour=colour)
         embed.set_footer(text='On The Spot!')
         return embed
@@ -90,7 +90,7 @@ class OnTheSpot(BaseGame):
         self.waiting = {}
         self.waiting_message = None
 
-    def create_embed(self, description=discord.Embed.Empty, *, colour=discord.Colour.purple()):
+    def create_embed(self, description=None, *, colour=discord.Colour.purple()):
         embed = discord.Embed(description=description, colour=colour)
         embed.set_footer(text='On The Spot!')
         return embed
