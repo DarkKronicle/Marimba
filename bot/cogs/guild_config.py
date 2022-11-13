@@ -30,7 +30,7 @@ class GuildSettings:
 
     @classmethod
     def get_default(cls, guild):
-        return cls(guild, '>', '')
+        return cls(guild, '>,$', '')
 
 
 async def get_guild_settings(bot, guild):

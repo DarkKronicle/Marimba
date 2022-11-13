@@ -100,6 +100,9 @@ class MarimbaBot(commands.Bot):
     def run(self):
         super().run(bot_global.config['bot_token'], reconnect=True)
 
+    async def start(self) -> None:
+        await super().start(bot_global.config['bot_token'], reconnect=True)
+
     @discord.utils.cached_property
     def log(self):
         return self.get_channel(bot_global.config['log_channel'])

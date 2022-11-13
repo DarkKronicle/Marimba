@@ -94,7 +94,7 @@ def patch_scrython():
     FoundationObject.get_request = get_request
 
 
-def run_bot():
+async def run_bot():
     bot_storage.config = Config(Path('./config.toml'))
     loop = asyncio.get_event_loop()
     log = logging.getLogger()
@@ -110,15 +110,18 @@ def run_bot():
     )
     try:
         pool = loop.run_until_complete(db.Table.create_pool(url, **kwargs))
-        loop.run_until_complete(database(pool))
+        await database(pool)
     except Exception as e:
         log.exception('Could not set up PostgreSQL. Exiting.')
         return
-    patch_scrython()
     bot = MarimbaBot(pool)
-    bot.run()
+    await bot.start()
 
 
 if __name__ == '__main__':
-    run_bot()
+    patch_scrython()
+    try:
+        asyncio.run(run_bot())
+    except KeyboardInterrupt:
+        exit()
 
