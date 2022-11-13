@@ -1,6 +1,6 @@
 import discord
 from discord.ext import menus
-from glocklib.paginator import Pages
+from bot.util.paginator import Pages
 
 from bot.mtg.card_views import CardView
 

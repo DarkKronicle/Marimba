@@ -2,11 +2,11 @@ import discord
 import typing
 from discord.ext import commands
 from bot.util import embed_utils
-from glocklib import database as db, checks, paginator
+from bot.util import database as db, checks, paginator
 
 # Based off of https://github.com/Rapptz/RoboDanny/blob/rewrite/cogs/tags.py
 # MPL v2
-from glocklib.context import Context
+from bot.core.context import Context
 
 
 class ClipPageEntry:
@@ -461,5 +461,5 @@ class Clips(commands.Cog):
         await ctx.send(embed=embed)
 
 
-def setup(bot):
-    bot.add_cog(Clips(bot))
+async def setup(bot):
+    await bot.add_cog(Clips(bot))

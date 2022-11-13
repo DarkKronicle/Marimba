@@ -4,8 +4,8 @@ import typing
 
 import discord
 from discord.ext import commands
-from glocklib import paginator
-from glocklib.context import Context
+from bot.util import paginator
+from bot.core.context import Context
 
 from bot.games.anagrams import AnagramGame
 from bot.games.battleship import BattleShip
@@ -236,5 +236,5 @@ class Games(commands.Cog):
         self.games.end_game(game)
 
 
-def setup(bot):
-    bot.add_cog(Games(bot))
+async def setup(bot):
+    await bot.add_cog(Games(bot))

@@ -1,15 +1,11 @@
-import io
-
 import aiohttp
 import discord
 import typing
 from discord.ext import commands
 import emoji
 from discord.ext.commands import BucketType
-from glocklib import paginator
-from glocklib.context import Context
-
-from bot.util import embed_utils
+from bot.util import paginator
+from bot.core.context import Context
 
 
 class ReplyConverter(commands.Converter):
@@ -118,78 +114,6 @@ class Utility(commands.Cog):
         except:
             pass
 
-    @commands.group(name='embed', invoke_without_command=True)
-    async def embed_command(self, ctx: Context, *, embed_data):
-        try:
-            embed = embed_utils.deserialize_string(embed_data)
-        except Exception as e:
-            return await ctx.send(embed=ctx.create_embed(e, title='Invalid embed!', error=True))
-        await ctx.send(embed=embed)
-
-    @embed_command.command(name='create')
-    async def embed_create(self, ctx: Context):
-        try:
-            answers = await embed_utils.get_creation_menu().ask(ctx, default='')
-        except:
-            return await ctx.send(embed=ctx.create_embed('Timed out!', error=True))
-        if len(answers['title']) == 0 and len(answers['description']) == 0:
-            return await ctx.send(embed=ctx.create_embed("Title and description can't be none!", error=True))
-
-        embed = embed_utils.embed_from_answers(answers)
-        await ctx.send(embed=embed, reference=ctx.message)
-        serial = embed_utils.serialize(embed)
-        file = io.StringIO()
-        file.write(serial)
-        file.seek(0)
-        discord_file = discord.File(file, filename='embed.json')
-        await ctx.send("Here's the serialized data!", file=discord_file)
-
-    @commands.command(name='reply', aliases=['r', 'respond'])
-    @commands.guild_only()
-    async def reply(self, ctx: Context, msg: ReplyConverter):
-        """
-        Mentions a message from anywhere in the guild.
-
-        Clicking on the title will take you to the original message.
-
-        Examples:
-            quote #general
-            quote <channel_id>--<message_id>
-            quote #general <message_id>
-            quote <message_link>
-        """
-        msg: discord.Message
-        if msg.guild.id != ctx.guild.id:
-            return await ctx.send(embed=ctx.create_embed('The message has to be in this guild!', error=True))
-        if msg.channel.is_nsfw() and not ctx.channel.is_nsfw():
-            return await ctx.send(embed=ctx.create_embed("Can't respond to a NSFW message in a normal channel!"))
-
-        embed = discord.Embed()
-        if isinstance(msg.author, discord.Member):
-            embed.colour = msg.author.colour
-
-        link = msg.jump_url
-        embed.set_author(name='{0} mentions:'.format(str(ctx.author)), url=link)
-        embed.set_footer(
-            text='{0} in #{1}'.format(msg.author, msg.channel),
-            icon_url=msg.author.avatar_url,
-        )
-        embed.timestamp = msg.created_at
-        text = msg.content
-        if not text:
-            if msg.embeds:
-                for e in msg.embeds:
-                    if e.description:
-                        text = e.description
-                        break
-            if not text:
-                text = 'Nothing...'
-        if len(text) > 200:
-            text = text[:97] + '...'
-        embed.description = '\n\n{0}'.format(text)
-        await ctx.send(embed=embed)
-        await ctx.delete()
-
     @commands.command(name='newmembers', aliases=['freshmeat', 'fresh'])
     @commands.guild_only()
     async def new_members(self, ctx: Context):
@@ -222,5 +146,5 @@ class Utility(commands.Cog):
         await ctx.send(embed=ctx.create_embed(txt))
 
 
-def setup(bot):
-    bot.add_cog(Utility(bot))
+async def setup(bot):
+    await bot.add_cog(Utility(bot))

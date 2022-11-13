@@ -1,8 +1,8 @@
-from glocklib import checks
-from glocklib import database as db
-from glocklib.context import Context
+from bot.util import checks
+from bot.util import database as db
+from bot.core.context import Context
 from discord.ext import commands
-from glocklib import storage_cache as cache
+from bot.util import cache
 import re
 
 
@@ -107,5 +107,5 @@ class GuildConfig(commands.Cog):
         await ctx.send(embed=ctx.create_embed('Updated mtg inline to `{0}`.'.format(regex)))
 
 
-def setup(bot):
-    bot.add_cog(GuildConfig(bot))
+async def setup(bot):
+    await bot.add_cog(GuildConfig(bot))

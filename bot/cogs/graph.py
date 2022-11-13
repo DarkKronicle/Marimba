@@ -5,7 +5,7 @@ import aiohttp
 import discord
 from discord.ext import commands
 from discord.ext.commands import BucketType
-from glocklib.context import Context
+from bot.core.context import Context
 import re
 
 
@@ -41,5 +41,5 @@ class Graph(commands.Cog):
         await ctx.send(file=f)
 
 
-def setup(bot):
-    bot.add_cog(Graph(bot))
+async def setup(bot):
+    await bot.add_cog(Graph(bot))

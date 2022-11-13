@@ -11,7 +11,7 @@ from discord.ext import commands
 import random
 import sys
 
-from glocklib.context import Context
+from bot.core.context import Context
 
 from bot.util import paginator
 from bot.util.json_reader import JsonReader
@@ -218,5 +218,5 @@ class Random(commands.Cog):
         ))
 
 
-def setup(bot):
-    bot.add_cog(Random(bot))
+async def setup(bot):
+    await bot.add_cog(Random(bot))

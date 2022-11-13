@@ -5,14 +5,13 @@ import urllib
 import aiohttp
 
 from bot.marimba_bot import MarimbaBot, startup_extensions
-from glocklib import database as db
+from bot.util import database as db
+from bot.util.config import Config
 import bot as bot_storage
-from glocklib.config import Config
 from pathlib import Path
 import importlib
 import logging
 
-import scrython
 from scrython.foundation import FoundationObject, ScryfallError
 
 

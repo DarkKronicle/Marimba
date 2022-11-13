@@ -12,7 +12,7 @@ import bot.mtg.rules as rules
 from bot.util import queue as async_queue, queue
 
 from discord.ext import commands, menus
-from glocklib.context import Context
+from bot.core.context import Context
 
 
 def rulings_embed(card, rulings):
@@ -301,5 +301,5 @@ class Magic(commands.Cog):
         return message
 
 
-def setup(bot):
-    bot.add_cog(Magic(bot))
+async def setup(bot):
+    await bot.add_cog(Magic(bot))
