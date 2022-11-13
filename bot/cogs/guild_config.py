@@ -36,9 +36,9 @@ class GuildSettings:
 async def get_guild_settings(bot, guild):
     """Get's basic guild settings information."""
     cog = bot.get_cog('GuildConfig')
-    # if cog is None:
-    return GuildSettings.get_default(guild)
-    # return await cog.get_settings(guild.id)
+    if cog is None:
+        return GuildSettings.get_default(guild)
+    return await cog.get_settings(guild.id)
 
 
 class GuildConfig(commands.Cog):

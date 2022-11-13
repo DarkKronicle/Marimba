@@ -65,3 +65,17 @@ class Context(commands.Context):
         if self._db is None:
             self._db = await self.pool.acquire(timeout=timeout)
         return self._db
+
+    def create_embed(self, description=discord.Embed.Empty, *, title=discord.Embed.Empty, error=False):
+        cmd: commands.Command = self.command
+        command_name = '{0} => '.format(cmd.cog_name)
+        subs = cmd.qualified_name.split(' ')
+        command_name += ' > '.join(subs)
+        embed = discord.Embed(
+            title=title,
+            description=description,
+            colour=discord.Colour.red() if error else properties.main_colour,
+        )
+        embed.set_author(name=command_name)
+        embed.set_footer(text=str(self.author), icon_url=self.author.avatar_url)
+        return embed
