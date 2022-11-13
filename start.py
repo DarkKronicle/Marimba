@@ -109,7 +109,7 @@ async def run_bot():
         bot_storage.config['postgresql_password'],
     )
     try:
-        pool = loop.run_until_complete(db.Table.create_pool(url, **kwargs))
+        pool = await db.Table.create_pool(url, **kwargs)
         await database(pool)
     except Exception as e:
         log.exception('Could not set up PostgreSQL. Exiting.')
