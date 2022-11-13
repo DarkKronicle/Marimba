@@ -27,7 +27,24 @@ description = 'Fun bot'
 
 
 async def get_prefix(bot_obj, message: discord.Message):
-    return ['$', 'x>']
+    user_id = bot_obj.user.id
+    prefixes = ['x>', '<@!{0}> '.format(user_id)]
+    space = ['x> ', '<@!{0}> '.format(user_id)]
+    if message.guild is None:
+        custom_prefix = ['>']
+    else:
+        custom_prefix = await bot_obj.get_guild_prefixes(message.guild)
+        if custom_prefix is None:
+            custom_prefix = ['>']
+    message_content: str = message.content
+    if message_content.startswith('x> '):
+        return space
+    for prefix in custom_prefix:
+        if message_content.startswith('{0} '.format(prefix)):
+            space.append('{0} '.format(prefix))
+            return space
+    prefixes.extend(custom_prefix)
+    return prefixes
 
 
 class MarimbaBot(commands.Bot):
@@ -47,7 +64,7 @@ class MarimbaBot(commands.Bot):
             message_content=True,
         )
         super().__init__(
-            command_prefix='&' if not self.debug else '$',
+            command_prefix=get_prefix,
             intents=intents,
             case_insensitive=True,
             owner_id=523605852557672449,
